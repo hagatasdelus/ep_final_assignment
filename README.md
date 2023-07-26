@@ -1,3 +1,4 @@
 # ep_final_assignment
 Expanded Programing Final Assignments<br>
-これは、発プロにおける最終課題を作成する上で、バージョン管理のためのレポジトリ。2023/春学期
+これは、発プロにおける最終課題を作成する上で、バージョン管理のためのレポジトリ。2023/春学期<br>
+最終課題締切日が過ぎるまで、Privateにしておく。
