@@ -9,6 +9,10 @@ import java.util.*;
 
 /*実行結果、予定より多くのものが入っていた。
  * それは100行目のputの部分からそうであるようだ。改善が必要
+ * まだ、-outputのときの-scoreと-id作ってないから作れ。
+ 単位取得率: Credit Acquisition Rate
+ グレードの人数の全体に占める割合: Percentage of total number of people in grade
+ 秀，優，良，可の人数の単位取得者に占める割合: Percentage of students who received credit for excellent, superior, good, and acceptable grades
  */
 // 最終課題 ステップ6
 // https://ksuap.github.io/2023spring/lesson14/assignments/#one-ステップ1
@@ -221,15 +225,78 @@ public class GradeChecker6 {
         return format; // 18, 1
     }
 
-    void printOutput(PrintWriter out,
-            HashMap<String, Double> mapOfScoreOrId) throws IOException {
-        // String format = this.valueIsExistForIdOrder(num, finalScore, grade);
-        // out.print(format); // 2, 1
+    void printIdOrder(PrintWriter out) throws IOException {
+        for (Integer i = 1; i <= this.max; i++) {
+            Double finalScore = this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
+                    i.toString());
+            String grade = this.getGrade(finalScore, i);
+            String format = this.valueIsExistForIdOrder(i, finalScore, grade);
+            if (out == null)
+                System.out.printf("%s", format);
+            else
+                out.printf("%s", format);
+        }
     }
 
-    void printGrades(HashMap<String, Double> mapScoreOrder) {
-        String format;
-        String grade;
+    void printScoreOrder(PrintWriter out, HashMap<String, Double> mapScoreOrder) throws IOException {
+        ArrayList<Map.Entry<String, Double>> sortedMapList = new ArrayList<>(mapScoreOrder.entrySet());
+        MapSortByBubble sorter = new MapSortByBubble();
+        sorter.sortMapBubbleSort(sortedMapList);
+        // format = this.valueIsExistForScoreOrder(, grade);
+        for (Map.Entry<String, Double> entry : sortedMapList) {
+            // System.out.println("実行されてます。3");
+            String grade = this.getGrade(entry.getValue(), Integer.valueOf(entry.getKey()));
+            String format = this.valueIsExistForScoreOrder(Integer.valueOf(entry.getKey()), grade);
+            // System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
+            if (out == null)
+                System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
+            else
+                out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
+        }
+    }
+
+    void printOutput(PrintWriter out,
+            HashMap<String, Double> mapScoreOrder) throws IOException {
+        // String format = this.valueIsExistForIdOrder(num, finalScore, grade);
+        // out.print(format); // 2, 1
+        // String format;
+        // String grade;
+        if (!arguments.scoreOrder) {
+            // System.out.println("実行されてます。1");
+            this.printIdOrder(out);
+
+            // for (Integer i = 1; i <= this.max; i++) {
+            // 宣言している変数の数が5個を超えるので、後ほど新しいメソッドに切り出すと良い
+            // Double finalScore =
+            // this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
+            // i.toString());
+            // grade = this.getGrade(finalScore, i);
+            // format = this.valueIsExistForIdOrder(i, finalScore, grade);
+            // System.out.printf("%s", format); // 2, 1
+            // out.printf("%s", format);
+            // }
+        } else {
+            this.printScoreOrder(out, mapScoreOrder);
+            // System.out.println("実行されてます。2");
+            // ArrayList<Map.Entry<String, Double>> sortedMapList = new
+            // ArrayList<>(mapScoreOrder.entrySet());
+            // MapSortByBubble sorter = new MapSortByBubble();
+            // sorter.sortMapBubbleSort(sortedMapList);
+            // // format = this.valueIsExistForScoreOrder(, grade);
+            // for (Map.Entry<String, Double> entry : sortedMapList) {
+            // // System.out.println("実行されてます。3");
+            // grade = this.getGrade(entry.getValue(), Integer.valueOf(entry.getKey()));
+            // format = this.valueIsExistForScoreOrder(Integer.valueOf(entry.getKey()),
+            // grade);
+            // // System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
+            // out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
+            // }
+        }
+    }
+
+    void printGrades(HashMap<String, Double> mapScoreOrder) throws IOException {
+        // String format;
+        // String grade;
         // System.out.println(arguments.scoreOrder);
         // for (Map.Entry<String, Double> entry : mapScoreOrder.entrySet()) {
         // System.out.println(entry.getKey() + ": " + entry.getValue());
@@ -237,29 +304,32 @@ public class GradeChecker6 {
         // System.out.println(mapScoreOrder.size());
         // System.out.println("実行完了");
         if (!arguments.scoreOrder) {
+            this.printIdOrder(null); // nullはあまり使いたくないけどコード
             // System.out.println("実行されてます。1");
-            for (Integer i = 1; i <= this.max; i++) {
-                // 宣言している変数の数が5個を超えるので、後ほど新しいメソッドに切り出すと良い
-                Double finalScore = this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
-                        i.toString());
-                grade = this.getGrade(finalScore, i);
-                format = this.valueIsExistForIdOrder(i, finalScore, grade);
-                System.out.printf("%s", format); // 2, 1
-            }
-        } else
-
-        {
+            // for (Integer i = 1; i <= this.max; i++) {
+            // // 宣言している変数の数が5個を超えるので、後ほど新しいメソッドに切り出すと良い
+            // Double finalScore =
+            // this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
+            // i.toString());
+            // grade = this.getGrade(finalScore, i);
+            // format = this.valueIsExistForIdOrder(i, finalScore, grade);
+            // System.out.printf("%s", format); // 2, 1
+            // }
+        } else {
+            this.printScoreOrder(null, mapScoreOrder);
             // System.out.println("実行されてます。2");
-            ArrayList<Map.Entry<String, Double>> sortedMapList = new ArrayList<>(mapScoreOrder.entrySet());
-            MapSortByBubble sorter = new MapSortByBubble();
-            sorter.sortMapBubbleSort(sortedMapList);
-            // format = this.valueIsExistForScoreOrder(, grade);
-            for (Map.Entry<String, Double> entry : sortedMapList) {
-                // System.out.println("実行されてます。3");
-                grade = this.getGrade(entry.getValue(), Integer.valueOf(entry.getKey()));
-                format = this.valueIsExistForScoreOrder(Integer.valueOf(entry.getKey()), grade);
-                System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
-            }
+            // ArrayList<Map.Entry<String, Double>> sortedMapList = new
+            // ArrayList<>(mapScoreOrder.entrySet());
+            // MapSortByBubble sorter = new MapSortByBubble();
+            // sorter.sortMapBubbleSort(sortedMapList);
+            // // format = this.valueIsExistForScoreOrder(, grade);
+            // for (Map.Entry<String, Double> entry : sortedMapList) {
+            // // System.out.println("実行されてます。3");
+            // grade = this.getGrade(entry.getValue(), Integer.valueOf(entry.getKey()));
+            // format = this.valueIsExistForScoreOrder(Integer.valueOf(entry.getKey()),
+            // grade);
+            // System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
+            // }
         }
 
     }
