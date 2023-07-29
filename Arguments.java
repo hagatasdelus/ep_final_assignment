@@ -7,12 +7,10 @@ public class Arguments {
     String miniexam;
     String output;
     Boolean scoreOrder = false; // true: score順 false: id:順
-    // ArrayList<String> arguments = new ArrayList<>();
 
     void parse(String[] args) {
         for (Integer i = 0; i < args.length; i++) {
             if (args[i].startsWith("-")) {
-                // arguments.add(args[i]);
                 i = parseOption(args, i);
             }
         }
