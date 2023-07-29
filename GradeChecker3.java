@@ -1,8 +1,8 @@
 import java.io.*;
 import java.util.*;
 // 必要な import 文を書いてください．
-
-// 最終課題 ステップ3 exam, miniexamは受験していない、書かれていない生徒がおり、asignmentは是認の記述がある
+// 各メソッドの最後の行にあるコメントアウトは「メソッドの行数, そのメソッドで定義された変数の数」を示している。
+// 最終課題 ステップ3
 // https://ksuap.github.io/2023spring/lesson14/assignments/#one-ステップ1
 
 public class GradeChecker3 {
@@ -26,10 +26,10 @@ public class GradeChecker3 {
         while ((line = in.readLine()) != null) {
             String[] array = line.split(",");
             exam.put(array[0], array[1]);
-            if (max < Integer.valueOf(array[0]))
-                max = Integer.valueOf(array[0]);
+            if (this.max < Integer.valueOf(array[0]))
+                this.max = Integer.valueOf(array[0]);
         }
-        in.close(); // 9, 4
+        in.close(); // 10, 4
     }
 
     void initializeForAssign(String csvFile) throws IOException {
@@ -51,7 +51,7 @@ public class GradeChecker3 {
             if (!Objects.equals(array[i], ""))
                 total += Integer.valueOf(array[i]);
         }
-        return total; // 5, 2
+        return total; // 6, 2
     }
 
     void initializeForMiniExam(String csvFile) throws IOException {
@@ -72,7 +72,7 @@ public class GradeChecker3 {
             if (!Objects.equals(array[i], ""))
                 count++;
         }
-        return count; // 5, 2
+        return count; // 6, 2
     }
 
     void gradeCheck() {
@@ -81,7 +81,7 @@ public class GradeChecker3 {
             String grade = this.getGrade(finalScore, i);
             this.printGrades(i, finalScore, grade);
         }
-        this.getStats(); // 18, 3
+        this.getStats(); // 6, 3
     }
 
     String getGrade(Double finalScore, Integer num) {
@@ -99,7 +99,7 @@ public class GradeChecker3 {
         else
             grade = "秀";
         return grade;
-    }
+    } // 14, 1
 
     void printGrades(Integer num, Double finalScore, String grade) {
         if (this.noExamCheck(num))
@@ -108,14 +108,14 @@ public class GradeChecker3 {
         else
             System.out.printf("%d,%2.0f,%s,%s,%s,%s%n", num, finalScore, "", assignments.get(num.toString()),
                     miniexam.getOrDefault(num.toString(), "0"), grade); // 2, 0
-    }
+    } // 6, 0
 
     void getStats() {
         this.printAverage();
         this.printMax();
         this.printMin();
         this.statsInfo();
-    }
+    } // 4 ,0
 
     Double getMaxWithAndWithoutFails(Boolean without) {
         Double max = 0.0;
@@ -127,7 +127,7 @@ public class GradeChecker3 {
                 max = finalScore; // 最大値
         }
         return max;
-    }
+    } // 9, 3
 
     Double getMinWithAndWithoutFails(Boolean without) {
         Double min = 100.0;
@@ -138,7 +138,7 @@ public class GradeChecker3 {
             if (finalScore < min)
                 min = finalScore;
         }
-        return min; // 8, 3
+        return min; // 9, 3
     }
 
     Double getAveWithAndWithoutFails(Boolean without) {
@@ -151,57 +151,56 @@ public class GradeChecker3 {
             sum += finalScore;
             count++;
         }
-        return sum / count; // 4, 9
-    }
+        return sum / count;
+    } // 10, 4
 
     void printMax() {
         Double maxWithFails = this.getMaxWithAndWithoutFails(false);
         Double minWithoutFails = this.getMaxWithAndWithoutFails(true);
         System.out.printf("Max: %.3f (%.3f)%n", maxWithFails, minWithoutFails);
-    }
+    }// 3, 2
 
     void printMin() {
         Double minWithFails = this.getMinWithAndWithoutFails(false);
         Double minWithoutFails = this.getMinWithAndWithoutFails(true);
         System.out.printf("Min: %.3f (%.3f)%n", minWithFails, minWithoutFails);
-    }
+    }// 3, 2
 
     void printAverage() {
         Double aveWithFails = this.getAveWithAndWithoutFails(false);
         Double aveWithoutFails = this.getAveWithAndWithoutFails(true);
         System.out.printf("Avg: %.3f (%.3f)%n", aveWithFails, aveWithoutFails);
-    }
+    }// 3, 2
 
     Boolean noExamCheck(Integer num) {
         if (Objects.equals(exam.get(num.toString()), null))
             return false;
         else
-            return true; // 2, 0
+            return true; // 4, 0
     }
 
     Double calcFinalScore(String id) {
         Double score = 70.0 * Double.valueOf(exam.getOrDefault(id, "0.0")) / 100.0
                 + 25.0 * Double.valueOf(assignments.get(id)) / 60.0
                 + 5.0 * Double.valueOf(miniexam.getOrDefault(id, "0.0")) / 14.0;
-        return score; // 2, 1;
+        return score; // 4, 1;
     }
 
     void statsInfo() {
         LinkedHashMap<String, Integer> statsMap = this.setup();
         for (Integer i = 1; i <= this.max; i++) {
             Double finalScore = Math.ceil(calcFinalScore(i.toString()));
-            // num = this.statsCount(finalScore, i);
             statsMap.put(getGrade(finalScore, i), statsMap.get(getGrade(finalScore, i)) + 1);
         }
         this.printStatsInfo(statsMap);
-        // , 4
+        // 6, 3
     }
 
     void printStatsInfo(LinkedHashMap<String, Integer> map) {
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
             System.out.printf("%s:   %2d%n", entry.getKey(), entry.getValue());
         }
-    }
+    } // 3, 1
 
     LinkedHashMap<String, Integer> setup() {
         LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
@@ -212,7 +211,7 @@ public class GradeChecker3 {
         map.put("不可", 0);
         map.put("K", 0);
         return map;
-    }
+    } // 8, 1
 
     // mainメソッドは省略
     public static void main(String[] args) throws IOException {

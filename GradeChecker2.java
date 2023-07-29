@@ -1,8 +1,8 @@
 import java.io.*;
 import java.util.*;
 // 必要な import 文を書いてください．
-
-// 最終課題 ステップ2 exam, miniexamは受験していない、書かれていない生徒がおり、asignmentは是認の記述がある
+// 各メソッドの最後の行にあるコメントアウトは「メソッドの行数, そのメソッドで定義された変数の数」を示している。
+// 最終課題 ステップ2
 // https://ksuap.github.io/2023spring/lesson14/assignments/#one-ステップ1
 
 public class GradeChecker2 {
@@ -26,8 +26,8 @@ public class GradeChecker2 {
         while ((line = in.readLine()) != null) {
             String[] array = line.split(",");
             exam.put(array[0], array[1]);
-            if (max < Integer.valueOf(array[0]))
-                max = Integer.valueOf(array[0]);
+            if (this.max < Integer.valueOf(array[0]))
+                this.max = Integer.valueOf(array[0]);
         }
         in.close(); // 9, 4
     }
@@ -92,7 +92,7 @@ public class GradeChecker2 {
             else
                 grade = "秀";
             this.printGrades(i, finalScore, grade);
-        } // 11, 3
+        } // 16, 3
     }
 
     void printGrades(Integer num, Double finalScore, String grade) {
@@ -102,20 +102,20 @@ public class GradeChecker2 {
         else
             System.out.printf("%d,%2.0f,%s,%s,%s,%s%n", num, finalScore, "", assignments.get(num.toString()),
                     miniexam.getOrDefault(num.toString(), "0"), grade); // 2, 0
-    }
+    } // 7, 0
 
     Boolean noExamCheck(Integer num) {
         if (Objects.equals(exam.get(num.toString()), null))
             return false;
         else
-            return true; // 2, 0
+            return true; // 4, 0
     }
 
     Double calcFinalScore(String id) {
         Double score = 70.0 * Double.valueOf(exam.getOrDefault(id, "0.0")) / 100.0
                 + 25.0 * Double.valueOf(assignments.get(id)) / 60
                 + 5.0 * Double.valueOf(miniexam.getOrDefault(id, "0.0")) / 14.0;
-        return score; // 2, 1;
+        return score; // 4, 1;
     }
 
     // mainメソッドは省略

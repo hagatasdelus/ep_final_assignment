@@ -1,20 +1,8 @@
 import java.io.*;
 import java.util.*;
 // 必要な import 文を書いてください．
-// L89を変える必要があるかも、
-// なぜなら, -score, -idを使うとしたら、現在他のことはよく調べていないが、ArrayListを使う(おそらくソートができる)として、
-// finalScoreもしくはid(idは既に実装できているからなし)を入れてソートする、その後にListの要素を最初から取り出してそれをもとに順番に出力って思ったけど、
-// 考えてみれば、HashMapのキーはidだから、そのそのオプションが使われていたら何をキーとするのかを判断してやらないといけないかも
-// もし最終成績をキーにできたら
-
-/*実行結果、予定より多くのものが入っていた。
- * それは100行目のputの部分からそうであるようだ。改善が必要
- * まだ、-outputのときの-scoreと-id作ってないから作れ。
- 単位取得率: Credit Acquisition Rate
- グレードの人数の全体に占める割合: Percentage of total number of people in grade
- 秀，優，良，可の人数の単位取得者に占める割合: Percentage of students who received credit for excellent, superior, good, and acceptable grades
- */
 // 最終課題 ステップ6
+// 各メソッドの最後の行にあるコメントアウトは「メソッドの行数, そのメソッドで定義された変数の数」を示している。
 // https://ksuap.github.io/2023spring/lesson14/assignments/#one-ステップ1
 
 public class GradeChecker6 {
@@ -38,22 +26,17 @@ public class GradeChecker6 {
 
         this.gradeCheck(scoreOrder); // 9, 0
         // ファイルをから点数を読み解き，成績を算出してください．
-        System.out.println(arguments.record + " , " + arguments.assignments + " , " + arguments.miniexam + " , "
-                + arguments.scoreOrder);
     }
 
     HashMap<String, Double> initializeForScore() {
         HashMap<String, Double> scoreOrder = new HashMap<>();
         for (Integer i = 1; i <= this.max; i++) {
             Double finalScore = this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
-                    i.toString()); // ここを変える必要があるかも
-            scoreOrder.put(i.toString(), finalScore); // mapScoreのキーが照準になるか調べる。いやだめだ、socreをキーにしたら絶対どこか被る
-            // scoreId.put(i.toString(), finalScore); //
-            // mapScoreのキーが照準になるか調べる。いやだめだ、socreをキーにしたら絶対どこか被る
-            // String grade = this.getGrade(finalScore, i);
+                    i.toString());
+            scoreOrder.put(i.toString(), finalScore);
         }
         return scoreOrder;
-    }
+    } // 7, 3
 
     void initializeForExam(String csvFile) throws IOException {
         this.exam = new HashMap<>();
@@ -62,10 +45,10 @@ public class GradeChecker6 {
         while ((line = in.readLine()) != null) {
             String[] array = line.split(",");
             exam.put(array[0], array[1]);
-            if (max < Integer.valueOf(array[0]))
-                max = Integer.valueOf(array[0]);
+            if (this.max < Integer.valueOf(array[0]))
+                this.max = Integer.valueOf(array[0]);
         }
-        in.close(); // 9, 4
+        in.close(); // 10, 4
     }
 
     void initializeForAssign(String csvFile) throws IOException {
@@ -112,33 +95,18 @@ public class GradeChecker6 {
     }
 
     void gradeCheck(HashMap<String, Double> scoreOrder) throws IOException {
-        PrintWriter out = arguments.output != null ? new PrintWriter(new FileWriter(arguments.output)) : null;
+        PrintWriter out;
         if (arguments.output != null)
-            this.printOutput(out, scoreOrder);
+            out = new PrintWriter(new FileWriter(arguments.output));
         else
-            this.printGrades(scoreOrder);
-        // Double finalScore;
-        // HashMap<String, Double> scoreId = new HashMap<>();
-        // for (Integer i = 1; i <= this.max; i++) {
-        // finalScore =
-        // this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
-        // i.toString()); // ここを変える必要があるかも
-        // scoreId.put(i.toString(), finalScore); //
-        // mapScoreのキーが照準になるか調べる。いやだめだ、socreをキーにしたら絶対どこか被る
-        // String grade = this.getGrade(finalScore, i);
-        // if (arguments.output != null)
-        // this.printOutput(i, finalScore, grade, out, scoreOrder);
-        // else
-        // this.printGrades(i, finalScore, grade, scoreOrder);
-        // }
-        // ここのforの処理をなくして、if (argumetns.output != null) elseだけにする
-        // それぞれのメソッドでfinalScoreとgradeを算出する。
-        // idOrderならこの今までの処理をそのままかく。
-        // scoreOrderならmapからentrysetでidを取り出して、そのidをそれぞれのexamやminiexamに
-        // 引数として指定し、getする。
+            out = null;
+        if (!arguments.scoreOrder)
+            this.printGradesByIdOrder(out); // nullはあまり使いたくないけどコード
+        else
+            this.printGradesByScoreOrder(out, scoreOrder);
         this.getStats(out);
         if (out != null)
-            out.close(); // 16, 5
+            out.close(); // 12, 1
     }
 
     Double calcFinalScoreFromAll(String id) {
@@ -225,7 +193,7 @@ public class GradeChecker6 {
         return format; // 18, 1
     }
 
-    void printIdOrder(PrintWriter out) throws IOException {
+    void printGradesByIdOrder(PrintWriter out) throws IOException {
         for (Integer i = 1; i <= this.max; i++) {
             Double finalScore = this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
                     i.toString());
@@ -235,103 +203,21 @@ public class GradeChecker6 {
                 System.out.printf("%s", format);
             else
                 out.printf("%s", format);
-        }
+        } // 10, 4
     }
 
-    void printScoreOrder(PrintWriter out, HashMap<String, Double> mapScoreOrder) throws IOException {
+    void printGradesByScoreOrder(PrintWriter out, HashMap<String, Double> mapScoreOrder) throws IOException {
         ArrayList<Map.Entry<String, Double>> sortedMapList = new ArrayList<>(mapScoreOrder.entrySet());
         MapSortByBubble sorter = new MapSortByBubble();
         sorter.sortMapBubbleSort(sortedMapList);
-        // format = this.valueIsExistForScoreOrder(, grade);
         for (Map.Entry<String, Double> entry : sortedMapList) {
-            // System.out.println("実行されてます。3");
             String grade = this.getGrade(entry.getValue(), Integer.valueOf(entry.getKey()));
             String format = this.valueIsExistForScoreOrder(Integer.valueOf(entry.getKey()), grade);
-            // System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
             if (out == null)
                 System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
             else
                 out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
-        }
-    }
-
-    void printOutput(PrintWriter out,
-            HashMap<String, Double> mapScoreOrder) throws IOException {
-        // String format = this.valueIsExistForIdOrder(num, finalScore, grade);
-        // out.print(format); // 2, 1
-        // String format;
-        // String grade;
-        if (!arguments.scoreOrder) {
-            // System.out.println("実行されてます。1");
-            this.printIdOrder(out);
-
-            // for (Integer i = 1; i <= this.max; i++) {
-            // 宣言している変数の数が5個を超えるので、後ほど新しいメソッドに切り出すと良い
-            // Double finalScore =
-            // this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
-            // i.toString());
-            // grade = this.getGrade(finalScore, i);
-            // format = this.valueIsExistForIdOrder(i, finalScore, grade);
-            // System.out.printf("%s", format); // 2, 1
-            // out.printf("%s", format);
-            // }
-        } else {
-            this.printScoreOrder(out, mapScoreOrder);
-            // System.out.println("実行されてます。2");
-            // ArrayList<Map.Entry<String, Double>> sortedMapList = new
-            // ArrayList<>(mapScoreOrder.entrySet());
-            // MapSortByBubble sorter = new MapSortByBubble();
-            // sorter.sortMapBubbleSort(sortedMapList);
-            // // format = this.valueIsExistForScoreOrder(, grade);
-            // for (Map.Entry<String, Double> entry : sortedMapList) {
-            // // System.out.println("実行されてます。3");
-            // grade = this.getGrade(entry.getValue(), Integer.valueOf(entry.getKey()));
-            // format = this.valueIsExistForScoreOrder(Integer.valueOf(entry.getKey()),
-            // grade);
-            // // System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
-            // out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
-            // }
-        }
-    }
-
-    void printGrades(HashMap<String, Double> mapScoreOrder) throws IOException {
-        // String format;
-        // String grade;
-        // System.out.println(arguments.scoreOrder);
-        // for (Map.Entry<String, Double> entry : mapScoreOrder.entrySet()) {
-        // System.out.println(entry.getKey() + ": " + entry.getValue());
-        // }
-        // System.out.println(mapScoreOrder.size());
-        // System.out.println("実行完了");
-        if (!arguments.scoreOrder) {
-            this.printIdOrder(null); // nullはあまり使いたくないけどコード
-            // System.out.println("実行されてます。1");
-            // for (Integer i = 1; i <= this.max; i++) {
-            // // 宣言している変数の数が5個を超えるので、後ほど新しいメソッドに切り出すと良い
-            // Double finalScore =
-            // this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
-            // i.toString());
-            // grade = this.getGrade(finalScore, i);
-            // format = this.valueIsExistForIdOrder(i, finalScore, grade);
-            // System.out.printf("%s", format); // 2, 1
-            // }
-        } else {
-            this.printScoreOrder(null, mapScoreOrder);
-            // System.out.println("実行されてます。2");
-            // ArrayList<Map.Entry<String, Double>> sortedMapList = new
-            // ArrayList<>(mapScoreOrder.entrySet());
-            // MapSortByBubble sorter = new MapSortByBubble();
-            // sorter.sortMapBubbleSort(sortedMapList);
-            // // format = this.valueIsExistForScoreOrder(, grade);
-            // for (Map.Entry<String, Double> entry : sortedMapList) {
-            // // System.out.println("実行されてます。3");
-            // grade = this.getGrade(entry.getValue(), Integer.valueOf(entry.getKey()));
-            // format = this.valueIsExistForScoreOrder(Integer.valueOf(entry.getKey()),
-            // grade);
-            // System.out.printf("%s,%2.0f%s", entry.getKey(), entry.getValue(), format);
-            // }
-        }
-
+        } // 11, 5
     }
 
     void getStats(PrintWriter out) {
@@ -417,21 +303,45 @@ public class GradeChecker6 {
 
     void statsInfo(PrintWriter out) {
         LinkedHashMap<String, Integer> statsMap = this.setup();
+        Integer passedCount = 0;
         for (Integer i = 1; i <= this.max; i++) {
             Double finalScore = this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
                     i.toString());
             statsMap.put(getGrade(finalScore, i), statsMap.get(getGrade(finalScore, i)) + 1);
+            if (finalScore >= 60)
+                passedCount++;
         }
-        this.printStatsInfo(statsMap, out); // 7, 3
+        this.printStatsInfo(statsMap, out, passedCount); // 7, 3
     }
 
-    void printStatsInfo(LinkedHashMap<String, Integer> map, PrintWriter out) {
+    void printStatsInfo(LinkedHashMap<String, Integer> map, PrintWriter out, Integer count) {
+        if (out != null)
+            out.printf("単位取得率: %.3f%%%n", Double.valueOf(count) / Double.valueOf(this.max) * 100.0);
+        else
+            System.out.printf("単位取得率: %.3f%%%n", Double.valueOf(count) / Double.valueOf(this.max) * 100.0);
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            if (out != null)
-                out.printf("%s:   %2d%n", entry.getKey(), entry.getValue());
-            else
-                System.out.printf("%s:   %2d%n", entry.getKey(), entry.getValue());
+            this.printNumAndCreditRate(entry, out, count);
         } // 6, 1
+    }
+
+    String getStatsFormat(Map.Entry<String, Integer> entry, Integer count) {
+        String format = String.format("%s:   %2d   %.3f%% ", entry.getKey(), entry.getValue(),
+                Double.valueOf(entry.getValue()) / Double.valueOf(this.max) * 100.0);
+        if (Objects.equals(entry.getKey(), "秀") || Objects.equals(entry.getKey(), "優")
+                || Objects.equals(entry.getKey(), "良") || Objects.equals(entry.getKey(), "可")) {
+            format += String.format("(%.3f%%)", Double.valueOf(entry.getValue()) / Double.valueOf(count) * 100.0);
+        }
+        format += String.format("%n");
+        return format;
+    }
+
+    void printNumAndCreditRate(Map.Entry<String, Integer> entry, PrintWriter out, Integer count) {
+        String format = this.getStatsFormat(entry, count);
+        if (out != null) {
+            out.printf("%s", format);
+        } else {
+            System.out.printf("%s", format);
+        }
     }
 
     LinkedHashMap<String, Integer> setup() {

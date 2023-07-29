@@ -1,5 +1,5 @@
 import java.util.Objects;
-import java.util.ArrayList;;
+// import java.util.ArrayList;;
 
 public class Arguments {
     String record;
@@ -7,16 +7,16 @@ public class Arguments {
     String miniexam;
     String output;
     Boolean scoreOrder = false; // true: score順 false: id:順
+    // ArrayList<String> arguments = new ArrayList<>();
 
     void parse(String[] args) {
-        ArrayList<String> arguments = new ArrayList<>();
         for (Integer i = 0; i < args.length; i++) {
-            if (!args[i].startsWith("-")) {
-                arguments.add(args[i]);
-            } else {
+            if (args[i].startsWith("-")) {
+                // arguments.add(args[i]);
                 i = parseOption(args, i);
             }
         }
+        this.orderCheck(args);
     }
 
     Integer parseOption(String[] args, Integer i) {
@@ -33,18 +33,35 @@ public class Arguments {
             i++;
             this.output = args[i];
         }
-        this.orderCheck(args, i); // 固定させたいけど、後々から指定できるconstみたいなのがあるか調べる
         return i;
-    } // 18, 0
+    } // 14, 0
 
-    void orderCheck(String[] args, Integer i) {
-        Boolean hasId = false;
-        if (Objects.equals(args[i], "-score") && !hasId)
-            this.scoreOrder = true;
-        if (Objects.equals(args[i], "-id")) {
-            this.scoreOrder = false;
-            hasId = true;
+    /*
+     * オプションの指定方法が間違っているケースは考えないので, -score -scoreなどと指定した場合は考えない。
+     */
+    void orderCheck(String[] args) {
+        Integer specifiedCount = 0;
+        for (Integer i = 0; i < args.length; i++) {
+            if (Objects.equals(args[i], "-id")) {
+                this.scoreOrder = false;
+                specifiedCount++;
+            }
+            if (Objects.equals(args[i], "-score")) {
+                this.scoreOrder = true;
+                specifiedCount++;
+            }
         }
-        // this.scoreOrder = false;
-    }
+        if (Objects.equals(specifiedCount, 2))
+            this.scoreOrder = false;
+    } // 13, 1
+
+    // void orderCheck(String[] args, Integer i) {
+    // if (Objects.equals(args[i], "-score"))
+    // this.scoreOrder = true;
+    // if (Objects.equals(args[i], "-id")) {
+    // this.scoreOrder = false;
+    // }
+    // for (String arg: args) {
+    // if (Objects.equals(arg, ""))
+    // }
 }

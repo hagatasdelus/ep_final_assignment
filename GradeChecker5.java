@@ -1,8 +1,8 @@
 import java.io.*;
 import java.util.*;
 // 必要な import 文を書いてください．
-
-// 最終課題 ステップ5 exam, miniexamは受験していない、書かれていない生徒がおり、asignmentは是認の記述がある
+// 各メソッドの最後の行にあるコメントアウトは「メソッドの行数, そのメソッドで定義された変数の数」を示している。
+// 最終課題 ステップ5
 // https://ksuap.github.io/2023spring/lesson14/assignments/#one-ステップ1
 
 public class GradeChecker5 {
@@ -20,11 +20,9 @@ public class GradeChecker5 {
             this.initializeForAssign(arguments.assignments);
         if (arguments.miniexam != null)
             this.initializeForMiniExam(arguments.miniexam);
-        // System.out.println(arguments.record + " , " + arguments.assignments + " , " +
-        // arguments.miniexam);
-        this.gradeCheck(); // 9, 0
+        this.gradeCheck();
         // ファイルをから点数を読み解き，成績を算出してください．
-    }
+    } // 8, 0
 
     void initializeForExam(String csvFile) throws IOException {
         this.exam = new HashMap<>();
@@ -33,10 +31,10 @@ public class GradeChecker5 {
         while ((line = in.readLine()) != null) {
             String[] array = line.split(",");
             exam.put(array[0], array[1]);
-            if (max < Integer.valueOf(array[0]))
-                max = Integer.valueOf(array[0]);
+            if (this.max < Integer.valueOf(array[0]))
+                this.max = Integer.valueOf(array[0]);
         }
-        in.close(); // 9, 4
+        in.close(); // 10, 4
     }
 
     void initializeForAssign(String csvFile) throws IOException {
@@ -79,11 +77,15 @@ public class GradeChecker5 {
             if (!Objects.equals(array[i], ""))
                 count++;
         }
-        return count; // 5, 2
+        return count; // 6, 2
     }
 
     void gradeCheck() throws IOException {
-        PrintWriter out = arguments.output != null ? new PrintWriter(new FileWriter(arguments.output)) : null;
+        PrintWriter out;
+        if (arguments.output != null)
+            out = new PrintWriter(new FileWriter(arguments.output));
+        else
+            out = null;
         for (Integer i = 1; i <= this.max; i++) {
             Double finalScore = this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
                     i.toString());
@@ -95,7 +97,7 @@ public class GradeChecker5 {
         }
         this.getStats(out);
         if (out != null)
-            out.close(); // 13, 4
+            out.close(); // 17, 4
     }
 
     Double calcFinalScoreFromAll(String id) {
