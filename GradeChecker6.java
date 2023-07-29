@@ -13,7 +13,7 @@ public class GradeChecker6 {
     Arguments arguments = new Arguments(); // 0, 5
 
     void run(String[] args) throws IOException {
-        HashMap<String, Double> scoreOrder = null;
+        LinkedHashMap<String, Double> scoreOrder = null;
         arguments.parse(args);
         if (arguments.record != null)
             this.initializeForExam(arguments.record);
@@ -28,8 +28,8 @@ public class GradeChecker6 {
         // ファイルをから点数を読み解き，成績を算出してください．
     }
 
-    HashMap<String, Double> initializeForScore() {
-        HashMap<String, Double> scoreOrder = new HashMap<>();
+    LinkedHashMap<String, Double> initializeForScore() {
+        LinkedHashMap<String, Double> scoreOrder = new LinkedHashMap<>();
         for (Integer i = 1; i <= this.max; i++) {
             Double finalScore = this.calcFinalScore(Double.valueOf(exam.getOrDefault(i.toString(), "0.0")),
                     i.toString());
@@ -94,7 +94,7 @@ public class GradeChecker6 {
         return count; // 5, 2
     }
 
-    void gradeCheck(HashMap<String, Double> scoreOrder) throws IOException {
+    void gradeCheck(LinkedHashMap<String, Double> scoreOrder) throws IOException {
         PrintWriter out;
         if (arguments.output != null)
             out = new PrintWriter(new FileWriter(arguments.output));
@@ -206,7 +206,7 @@ public class GradeChecker6 {
         } // 10, 4
     }
 
-    void printGradesByScoreOrder(PrintWriter out, HashMap<String, Double> mapScoreOrder) throws IOException {
+    void printGradesByScoreOrder(PrintWriter out, LinkedHashMap<String, Double> mapScoreOrder) throws IOException {
         ArrayList<Map.Entry<String, Double>> sortedMapList = new ArrayList<>(mapScoreOrder.entrySet());
         MapSortByBubble sorter = new MapSortByBubble();
         sorter.sortMapBubbleSort(sortedMapList);
