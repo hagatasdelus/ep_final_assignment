@@ -1,6 +1,5 @@
 import java.util.*;
 
-// アルゴリズムとデータ構造10/バブルソートより
 // もっといいソートアルゴリズムもあるが、一番簡単なのでこれを採用
 public class MapSortByBubble {
     void sortMapBubbleSort(ArrayList<Map.Entry<String, Double>> list) {
